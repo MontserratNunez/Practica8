@@ -1,0 +1,40 @@
+---
+- name: Automatizacion de servidores con Ansible
+  hosts: servidores
+  become: yes
+
+  tasks:
+    - name: 1. Actualizar cache de APT del sistema operativo
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: 2. Crear el usuario itla en cada servidor
+      user:
+        name: itla
+        state: present
+        shell: /bin/bash
+        create_home: yes
+
+    - name: 3. Crear una carpeta llamada 'app'
+      file:
+        path: /home/ansible/app
+        state: directory
+        owner: ansible
+        group: ansible
+        mode: '0755'
+
+    - name: 4. Crear un archivo hola.txt en la carpeta app
+      copy:
+        content: "Hola Mundo desde Ansible en ITLA\n"
+        dest: /home/ansible/app/hola.txt
+        owner: ansible
+        group: ansible
+        mode: '0644'
+
+    - name: 5. Instalar las aplicaciones cowsay y htop
+      apt:
+        name:
+          - cowsay
+          - htop
+        state: present
